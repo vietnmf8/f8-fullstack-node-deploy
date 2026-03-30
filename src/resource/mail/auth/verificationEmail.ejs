@@ -1,0 +1,137 @@
+<!-- Đuôi ejs: View Engine: Trình làm phần view trong dự án
+- Hỗ trợ HTML
+- Hỗ trợ chèn được biến, đẩy dữ liệu sang template này
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verify Your Email</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background-color: #f4f4f4;
+    }
+
+    .email-container {
+      max-width: 600px;
+      margin: 40px auto;
+      background-color: #ffffff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .header {
+      background-color: #4F46E5;
+      padding: 40px 20px;
+      text-align: center;
+      color: #ffffff;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 600;
+    }
+
+    .content {
+      padding: 40px 30px;
+      color: #333333;
+      line-height: 1.6;
+    }
+
+    .content h2 {
+      margin: 0 0 20px 0;
+      font-size: 22px;
+      color: #1a1a1a;
+    }
+
+    .content p {
+      margin: 0 0 20px 0;
+      font-size: 16px;
+    }
+
+    .button-container {
+      text-align: center;
+      margin: 30px 0;
+    }
+
+    .verify-button {
+      display: inline-block;
+      padding: 14px 40px;
+      background-color: #4F46E5;
+      color: #ffffff;
+      text-decoration: none;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: 600;
+      transition: background-color 0.3s;
+    }
+
+    .verify-button:hover {
+      background-color: #4338CA;
+    }
+
+    .divider {
+      margin: 30px 0;
+      border-top: 1px solid #e5e5e5;
+    }
+
+    .alternative-link {
+      font-size: 14px;
+      color: #666666;
+      word-break: break-all;
+    }
+
+    .footer {
+      padding: 30px;
+      text-align: center;
+      background-color: #f9fafb;
+      border-top: 1px solid #e5e5e5;
+      font-size: 14px;
+      color: #666666;
+    }
+
+    .footer p {
+      margin: 5px 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="email-container">
+    <div class="header">
+      <h1>Verify Your Email</h1>
+    </div>
+
+    <div class="content">
+      <h2>Welcome!</h2>
+      <p>Thanks for signing up. To complete your registration, please verify your email address by clicking the button below.</p>
+
+      <div class="button-container">
+        <!-- Hiển thị giá trị của biến này vào vị trí này -->
+        <a href="<%= verificationLink %>" style="color:#ffffff !important;" class="verify-button">Verify Email Address</a>
+      </div>
+
+      <p>This link will expire in <%= expiryHours %> hours for security reasons.</p>
+
+      <div class="divider"></div>
+
+      <p><strong>If the button doesn't work, copy and paste this link into your browser:</strong></p>
+      <p class="alternative-link"><%= verificationLink %></p>
+
+      <div class="divider"></div>
+
+      <p style="font-size: 14px; color: #666666;">If you didn't create an account, you can safely ignore this email.</p>
+    </div>
+
+
+  </div>
+</body>
+
+</html>

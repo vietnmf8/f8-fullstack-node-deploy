@@ -1,0 +1,177 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+/**
+ * ==================  User  ==================
+ */
+model User {
+  id                       Int                        @id @default(autoincrement()) @db.UnsignedInt
+  name                     String?                    @db.VarChar(255)
+  email                    String                     @unique(map: "uq_users_email") @db.VarChar(50)
+  password                 String                     @db.VarChar(100)
+  score                    Int?
+  posts_count              Int                        @default(0)
+  email_verified_at        DateTime?                  @db.Timestamp(0)
+  created_at               DateTime?                  @default(now()) @db.Timestamp(0)
+  updated_at               DateTime?                  @default(now()) @db.Timestamp(0)
+  posts                    Post[]
+  refreshTokens            RefreshToken[]
+  comments                 Comment[]
+  conversationParticipants ConversationParticipants[]
+  messages                 Message[]
+  chatBotMessages          ChatBotMessage[]
+
+  @@map("users")
+}
+
+/**
+ * ==================  Conversation  ==================
+ */
+model Conversation {
+  id                        Int                        @id @default(autoincrement()) @db.UnsignedInt
+  name                      String?                    @db.VarChar(255)
+  type                      conversations_type?        @default(direct)
+  created_by                Int?
+  created_at                DateTime?                  @default(now()) @db.Timestamp(0)
+  updated_at                DateTime?                  @default(now()) @db.Timestamp(0)
+  conversation_participants ConversationParticipants[]
+  messages                  Message[]
+
+  @@map("conversations")
+}
+
+enum conversations_type {
+  group
+  direct
+}
+
+/**
+ * ==================  Message  ==================
+ */
+model Message {
+  id              Int          @id @default(autoincrement()) @db.UnsignedInt
+  sender_id       Int          @db.UnsignedInt
+  conversation_id Int          @db.UnsignedInt
+  type            String       @default("text")
+  content         String?      @db.Text
+  created_at      DateTime?    @default(now()) @db.Timestamp(0)
+  updated_at      DateTime?    @db.Timestamp(0)
+  user            User         @relation(fields: [sender_id], references: [id])
+  conversation    Conversation @relation(fields: [conversation_id], references: [id])
+
+  @@map("messages")
+}
+
+/**
+ * ==================  ChatBotMessage  ==================
+ */
+model ChatBotMessage {
+  id         Int       @id @default(autoincrement()) @db.UnsignedInt
+  user_id    Int       @db.UnsignedInt
+  type       String    @default("text")
+  content    String?   @db.Text
+  created_at DateTime? @default(now()) @db.Timestamp(0)
+  updated_at DateTime? @db.Timestamp(0)
+  user       User      @relation(fields: [user_id], references: [id])
+
+  @@map("chatbot_messages")
+}
+
+/**
+ * ==================  Bảng trung gian: Conversation - User  ==================
+ */
+model ConversationParticipants {
+  id              Int          @id @default(autoincrement()) @db.UnsignedInt
+  user_id         Int          @db.UnsignedInt
+  conversation_id Int          @db.UnsignedInt
+  created_at      DateTime?    @default(now()) @db.Timestamp(0)
+  updated_at      DateTime?    @db.Timestamp(0)
+  user            User         @relation(fields: [user_id], references: [id])
+  conversation    Conversation @relation(fields: [conversation_id], references: [id])
+
+  @@map("conversation_participants")
+}
+
+/**
+ * ==================  Post  ==================
+ */
+model Post {
+  id         Int       @id @default(autoincrement()) @db.UnsignedInt
+  user_id    Int       @db.UnsignedInt
+  title      String?   @db.VarChar(255)
+  content    String?   @db.Text
+  views      Int?
+  created_at DateTime? @default(now()) @db.Timestamp(0)
+  updated_at DateTime? @default(now()) @db.Timestamp(0)
+  user       User      @relation(fields: [user_id], references: [id])
+  comments   Comment[]
+
+  @@map("posts")
+}
+
+/**
+ * ==================  Comment  ==================
+ */
+model Comment {
+  id         Int       @id @default(autoincrement()) @db.UnsignedInt
+  content    String    @db.Text
+  user_id    Int       @db.UnsignedInt
+  post_id    Int       @db.UnsignedInt
+  created_at DateTime? @default(now()) @db.Timestamp(0)
+  updated_at DateTime? @default(now()) @db.Timestamp(0)
+  user       User      @relation(fields: [user_id], references: [id])
+  post       Post      @relation(fields: [post_id], references: [id])
+
+  @@map("comments")
+}
+
+/**
+ * ==================  Queue  ==================
+ */
+model Queue {
+  id         Int       @id @default(autoincrement()) @db.UnsignedInt
+  type       String?   @db.VarChar(255)
+  payload    String?   @db.Text
+  status     String?   @default("pending") @db.VarChar(255)
+  info       String?   @db.Text
+  created_at DateTime? @default(now()) @db.Timestamp(0)
+  updated_at DateTime? @default(now()) @db.Timestamp(0)
+
+  @@map("queues")
+}
+
+/**
+ * ==================  RefreshToken  ==================
+ */
+model RefreshToken {
+  id         Int       @id @default(autoincrement()) @db.UnsignedInt
+  user_id    Int       @db.UnsignedInt
+  token      String?   @db.VarChar(255)
+  is_revoked Int?      @default(0) @db.TinyInt
+  expires_at DateTime? @db.Timestamp(0)
+  user_agent String?   @db.VarChar(255)
+  created_at DateTime? @default(now()) @db.Timestamp(0)
+  updated_at DateTime? @db.Timestamp(0)
+  user       User      @relation(fields: [user_id], references: [id])
+
+  @@map("refresh_tokens")
+}
+
+/**
+ * ==================  RevokedToken  ==================
+ */
+model RevokedToken {
+  id         Int       @id @default(autoincrement()) @db.UnsignedInt
+  token      String?   @db.Text
+  expires_at DateTime? @db.Timestamp(0)
+  created_at DateTime? @default(now()) @db.Timestamp(0)
+  updated_at DateTime? @db.Timestamp(0)
+
+  @@map("revoked_tokens")
+}
